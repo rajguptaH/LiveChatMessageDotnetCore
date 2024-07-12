@@ -1,8 +1,44 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model LIveCallMessagingDotnetCore.Models.MessageDto
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+    <script defer src="https://widget-js.cometchat.io/v3/cometchatwidget.js"></script>
+
+    <div style="height:93vh !important" id="cometchat"></div>
+    <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            CometChatWidget.init({
+            "appID": "appId",
+            "appRegion": "IN",
+            "authKey": "authkey"
+            }).then(response => {
+
+                console.log("Initialization completed successfully");
+                //You can now call login function.
+                var UID = "@Model.CometUID";
+                var NAME = '@Model.FullName';
+
+                const user = new CometChatWidget.CometChat.User(UID);
+                user.setName(NAME);
+                CometChatWidget.createOrUpdateUser(user).then((user) => {
+                    CometChatWidget.login({
+                        "uid": UID
+                    }).then(response => {
+                        CometChatWidget.launch({
+                        "widgetID": "widgetid",
+                            "target": "#cometchat",
+                            "roundedCorners": "false",
+                            "height": "100%",
+                            "width": "100%",
+                            "defaultID": UID, //default UID (user) or GUID (group) to show,
+                            "defaultType": 'user' //user or group
+                        });
+                    }, error => {
+                        console.log("User login failed with error:", error);
+                        //Check the reason for error and take appropriate action.
+                    });
+                });
+            }, error => {
+                console.log("Initialization failed with error:", error);
+                //Check the reason for error and take appropriate action.
+            });
+        });
+    </script>
